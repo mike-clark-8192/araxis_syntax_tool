@@ -20,7 +20,7 @@ The Araxis blob is a single JSON object mapping string keys to string values. Ex
 ```
 "file.patterns.<UUID>": "<semicolon-delimited filename patterns>",
 "genericlanguage.description.<UUID>": "<display name>",
-"keywords.*.<patternKeySuffix>": "<whitespace separated keywords>",
+"keywords.*.<patternKeySuffix>": "<whitespace separated keywords (class 1)>",
 "keywords2.*.<patternKeySuffix>": "<keywords class 2>",
 "keywords3.*.<patternKeySuffix>": "<operator symbols / group3>",
 "keywords4.*.<patternKeySuffix>": "<single-line comment symbols>",
@@ -73,6 +73,30 @@ The CLI writes and reads one JSON file per language when unpacking/packing. The 
   "backslashIsAStringEscape": true | false,
   "lexer": "generic"
 }
+```
+
+# `keywordsClass1`, `keywordsClass2`, `keywordsClass3` 
+
+These are colorized differently by Araxis. When writing new syntax definitions,
+the end-user will appreciate if you cluster similar keywords into the same class.
+
+Let's use Python as an illustrative example:
+Builtin and well-known functions go into `keywordsClass1`:
+```
+list dict set tuple print len open range str int
+__repr__ __str__ __lt__ __le__ __gt__ __eq__ # etc.
+args kwargs
+```
+
+Builtin and common constants might go into `keywordsClass2`:
+```
+True False None Ellipsis Error SyntaxError TypeError NotImplemented
+List Dict Set Tuple Optional Union Any Callable Iterable Iterator Sequence Mapping
+```
+
+Control flow keywords might go into `keywordsClass3`:
+```
+if else elif for while break continue return import from as def class with try except finally raise yield
 ```
 
 Notes:
@@ -143,6 +167,45 @@ The CLI unpacks this into the per-language fields `isCaseSensitive` and `backsla
   "isCaseSensitive": "true",
   "backslashIsAStringEscape": false,
   "lexer": "generic"
+}
+```
+
+### Straight from the registry (sans the `json:` header prefix):
+```json
+{
+    "file.patterns.4C21476D-F9BE-4345-AB8A-1F1EDBB8459B": "*.bnl;*.bnh",
+    "file.patterns.twincat": "*.exp",
+    "file.patterns.visualdataflex": "*.src;*.pkg",
+    "genericlanguage.description.4C21476D-F9BE-4345-AB8A-1F1EDBB8459B": "BrandNewLanguage (BNL)",
+    "genericlanguage.description.twincat": "TwinCAT or IEC",
+    "genericlanguage.description.visualdataflex": "VisualDataFlex",
+    "keywords.*.bnl;*.bnh": "BNL_KEYWORD1 BNL_KEYWORD2 BNL_KEYWORD3",
+    "keywords.*.exp": "BOOL BYTE INT WORD DINT DWORD REAL STRING ARRAY POINTER_TO ADR MIN MAX DINT_TO_DWORD REAL_TO_DWORD AND OR NOT SEL",
+    "keywords.*.src;*.pkg": "Class End_Class Use Set Get Object End_Object Forward is a of to If Begin End True False Procedure End_Procedure Function End_Function Function_Return On_Key Send Variant OverrideProperty InitialValue",
+    "keywords2.*.bnl;*.bnh": "BNL_KEYWORD4 BNL_KEYWORD5 BNL_KEYWORD6",
+    "keywords2.*.exp": "FOR END_FOR TO DO FROM VAR END_VAR FUNCTION_BLOCK VAR_INPUT ACTION END_ACTION",
+    "keywords2.*.src;*.pkg": "OverrideProperty InitialValue ClassType",
+    "keywords3.*.bnl;*.bnh": ":= + - * / ^ < > <= >= == = [ ] ( )",
+    "keywords3.*.exp": ":= + - * / ^ < > <= >= == = [ ] ( )",
+    "keywords3.*.src;*.pkg": "",
+    "keywords4.*.bnl;*.bnh": "//",
+    "keywords4.*.exp": "",
+    "keywords4.*.src;*.pkg": "",
+    "keywords5.*.bnl;*.bnh": "/* (*",
+    "keywords5.*.exp": "(*",
+    "keywords5.*.src;*.pkg": "",
+    "keywords6.*.bnl;*.bnh": "*/ *)",
+    "keywords6.*.exp": "*)",
+    "keywords6.*.src;*.pkg": "",
+    "keywords7.*.bnl;*.bnh": "true no_backslash_escape",
+    "keywords7.*.exp": "false",
+    "keywords7.*.src;*.pkg": "false",
+    "keywords8.*.bnl;*.bnh": "BNL_KEYWORD7 BNL_KEYWORD8 BNL_KEYWORD9",
+    "keywords8.*.exp": "",
+    "keywords8.*.src;*.pkg": "",
+    "lexer.*.bnl;*.bnh": "generic",
+    "lexer.*.exp": "generic",
+    "lexer.*.src;*.pkg": "generic"
 }
 ```
 

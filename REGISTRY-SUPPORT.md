@@ -31,3 +31,7 @@ Present in the registry, then we would default to reading/writing to the 7.1 key
 `reg:7.0` or `reg:7.1` (for example). If the key doesn't exist, the program should exit with an explanatory error,
 because that version of Araxis Merge probably is not installed.
 
+# Implementation notes
+
+Probably use the `winreg` module that ships with Python.
+https://docs.python.org/3/library/winreg.html
