@@ -23,7 +23,6 @@ K_CASE = "keywords7.*."
 K_KW3 = "keywords8.*."
 K_LEXER = "lexer.*."
 
-# TODO: use fnmatch?
 def pattern_to_key_suffix(filename_pattern: str) -> str:
     parts = filename_pattern.split(";")
     if parts:
