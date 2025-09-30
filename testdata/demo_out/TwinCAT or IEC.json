@@ -1,0 +1,14 @@
+{
+  "uuid": "twincat",
+  "name": "TwinCAT or IEC",
+  "filenamePattern": "*.exp",
+  "keywordsClass1": "BOOL BYTE INT WORD DINT DWORD REAL STRING ARRAY POINTER_TO ADR MIN MAX DINT_TO_DWORD REAL_TO_DWORD AND OR NOT SEL",
+  "keywordsClass2": "FOR END_FOR TO DO FROM VAR END_VAR FUNCTION_BLOCK VAR_INPUT ACTION END_ACTION",
+  "keywordsClass3": "",
+  "operatorSymbols": ":= + - * / ^ < > <= >= == = [ ] ( )",
+  "singleLineCommentSymbols": "",
+  "multiLineCommentStartSymbols": "(*",
+  "multiLineCommentEndSymbols": "*)",
+  "isCaseSensitive": "false",
+  "lexer": "generic"
+}

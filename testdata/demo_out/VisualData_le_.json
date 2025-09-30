@@ -1,0 +1,14 @@
+{
+  "uuid": "visualdataflex",
+  "name": "VisualDataFlex",
+  "filenamePattern": "*.src;*.pkg",
+  "keywordsClass1": "Class End_Class Use Set Get Object End_Object Forward is a of to If Begin End True False Procedure End_Procedure Function End_Function Function_Return On_Key Send Variant OverrideProperty InitialValue",
+  "keywordsClass2": "OverrideProperty InitialValue ClassType",
+  "keywordsClass3": "",
+  "operatorSymbols": "",
+  "singleLineCommentSymbols": "",
+  "multiLineCommentStartSymbols": "",
+  "multiLineCommentEndSymbols": "",
+  "isCaseSensitive": "false",
+  "lexer": "generic"
+}

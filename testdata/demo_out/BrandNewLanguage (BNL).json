@@ -1,0 +1,14 @@
+{
+  "uuid": "4C21476D-F9BE-4345-AB8A-1F1EDBB8459B",
+  "name": "BrandNewLanguage (BNL)",
+  "filenamePattern": "*.bnl;*.bnh",
+  "keywordsClass1": "BNL_KEYWORD1 BNL_KEYWORD2 BNL_KEYWORD3",
+  "keywordsClass2": "BNL_KEYWORD4 BNL_KEYWORD5 BNL_KEYWORD6",
+  "keywordsClass3": "BNL_KEYWORD7 BNL_KEYWORD8 BNL_KEYWORD9",
+  "operatorSymbols": "BNL_OPERATORS := + - * / ^ < > <= >= == = [ ] ( )",
+  "singleLineCommentSymbols": "BNL_SINGLELINECOMMENTS //",
+  "multiLineCommentStartSymbols": "BNL_COMMENT_BEGIN /* (*",
+  "multiLineCommentEndSymbols": "BNL_COMMENT_END */ *)",
+  "isCaseSensitive": "true",
+  "lexer": "generic"
+}

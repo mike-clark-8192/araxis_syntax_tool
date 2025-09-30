@@ -1,0 +1,18 @@
+[project]
+name = "araxis-syntax-tool"
+version = "0.1.0"
+description = "tool for unfscking and refscking syntax highlighting for Araxis Merge"
+readme = "README.md"
+authors = [
+    { name = "Mike Clark", email = "mike.clark@nvoq.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pathvalidate>=3.3.1",
+]
+
+[project.scripts]
+araxis-syntax-tool = "araxis_syntax_tool.cli:main"
+
+[tool.uv]
+package = true
