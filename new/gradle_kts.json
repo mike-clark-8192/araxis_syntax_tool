@@ -1,0 +1,15 @@
+{
+  "uuid": "gradle-kts",
+  "name": "Gradle (Kotlin DSL)",
+  "filenamePattern": "*.gradle.kts",
+  "keywordsClass1": "plugins pluginManagement buildscript dependencies dependencyResolutionManagement repositories repository tasks task copy from into doLast doFirst project rootProject allprojects subprojects settings include includeFlat sourceSets android java kotlin springBoot publishing publications signing version catalog catalogs mavenCentral google gradlePluginPortal implementation api compileOnly runtimeOnly testImplementation testRuntimeOnly annotationProcessor kapt kotlinOptions application mainClass",
+  "keywordsClass2": "Project Settings Task NamedDomainObjectContainer Provider Property RegularFile Directory FileCollection Configuration Dependency PublishingExtension MavenPublication IvyPublication SigningExtension KotlinJvmPluginExtension KotlinMultiplatformExtension JavaPluginExtension Map List Set Sequence Pair Triple true false null",
+  "keywordsClass3": "if else when try catch finally for while do return break continue throw in !in is !is as as? this super object class interface enum data sealed companion typealias fun val var init where get set constructor field property receiver override open final abstract private protected public internal lateinit tailrec inline noinline crossinline reified suspend infix operator external const expect actual annotation out vararg by import package",
+  "operatorSymbols": "+ - * / % ++ -- && || ! = == === != !== <= >= < > ?: ?. :: .. !! += -= *= /= %= <<= >>= ( ) { } [ ]",
+  "singleLineCommentSymbols": "//",
+  "multiLineCommentStartSymbols": "/*",
+  "multiLineCommentEndSymbols": "*/",
+  "isCaseSensitive": "true",
+  "backslashIsAStringEscape": true,
+  "lexer": "generic"
+}

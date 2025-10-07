@@ -1,0 +1,15 @@
+{
+  "uuid": "gradle-groovy",
+  "name": "Gradle (Groovy DSL)",
+  "filenamePattern": "*.gradle",
+  "keywordsClass1": "apply plugin plugins buildscript dependencies dependencyManagement dependencyResolutionManagement repositories repository task tasks copy from into doLast doFirst project rootProject allprojects subprojects settings include includeFlat sourceSets artifacts publishing publications signing android java kotlin springBoot mavenCentral google gradlePluginPortal classpath implementation api compileOnly runtimeOnly testImplementation testRuntimeOnly annotationProcessor kapt",
+  "keywordsClass2": "Project Settings Tasks Task File Tree Configuration Dependency Provider Property RegularFile Directory FileCollection ArchiveSpec CopySpec ExecSpec PublishingExtension MavenPublication IvyPublication SigningExtension KotlinJvmPluginExtension KotlinMultiplatformExtension JavaPluginExtension NamedDomainObjectContainer Closure Map List Set true false null",
+  "keywordsClass3": "if else switch case default for while do return break continue try catch finally throw assert in as def class interface enum extends implements import package new static synchronized",
+  "operatorSymbols": "+ - * / % ++ -- && || ! = == != <= >= < > ?: ?. .. += -= *= /= %= <<= >>= ( ) { } [ ]",
+  "singleLineCommentSymbols": "//",
+  "multiLineCommentStartSymbols": "/*",
+  "multiLineCommentEndSymbols": "*/",
+  "isCaseSensitive": "true",
+  "backslashIsAStringEscape": true,
+  "lexer": "generic"
+}

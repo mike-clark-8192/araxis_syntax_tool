@@ -141,6 +141,7 @@ The CLI unpacks this into the per-language fields `isCaseSensitive` and `backsla
 - `pack <input_dir> <output_file>`: reads all `*.json` files in `input_dir` (simple validation applied) and writes a single Araxis blob to `output_file`. By default the output is minified and prefixed with `json: `. When `--no-header` is supplied, the output is pretty-printed with indent=2 and **no** `json:` prefix.
 - `merge <input_dir> <output_file>`: applies UPSERT rules (see Merge section). If `output_file` does not exist, `merge` behaves like `pack` and creates a new blob containing the incoming languages.
 - `--no-header`: omit the `json:` header and pretty-print the JSON when writing an Araxis blob.
+- Wherever the CLI expects an Araxis blob path, you may pass `reg[:version]` instead of a filename. This targets the `SyntaxHighlightingGeneric` value under `HKCU\SOFTWARE\Araxis\Merge\<version>`; if no version is supplied the newest available version is used.
 
 ---
 

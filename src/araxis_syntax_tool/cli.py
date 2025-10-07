@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import os
 import re
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
+
+try:
+    import winreg  # type: ignore
+except ImportError:  # pragma: no cover - winreg unavailable on non-Windows
+    winreg = None
 
 from pathvalidate import sanitize_filename
 
@@ -23,6 +27,16 @@ K_CASE = "keywords7.*."
 K_KW3 = "keywords8.*."
 K_LEXER = "lexer.*."
 
+REG_BASE_SUBKEY = r"SOFTWARE\Araxis\Merge"
+REG_VALUE_NAME = "SyntaxHighlightingGeneric"
+
+
+@dataclass
+class BlobLocation:
+    kind: str  # "file" or "registry"
+    path: Optional[Path] = None
+    version: Optional[str] = None
+
 def pattern_to_key_suffix(filename_pattern: str) -> str:
     parts = filename_pattern.split(";")
     if parts:
@@ -32,6 +46,114 @@ def pattern_to_key_suffix(filename_pattern: str) -> str:
         elif p0.startswith("*"):
             parts[0] = p0[1:]
     return ";".join(parts)
+
+
+def _require_winreg() -> None:
+    if winreg is None:
+        raise SystemExit("Registry access is only supported on Windows (winreg module not available).")
+
+
+def _version_sort_key(version: str) -> Tuple:
+    parts = re.split(r"(\d+)", version)
+    key = []
+    for part in parts:
+        if not part:
+            continue
+        if part.isdigit():
+            key.append((0, int(part)))
+        else:
+            key.append((1, part.lower()))
+    return tuple(key)
+
+
+def _list_registry_versions() -> List[str]:
+    _require_winreg()
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, REG_BASE_SUBKEY) as key:
+            versions: List[str] = []
+            index = 0
+            while True:
+                try:
+                    versions.append(winreg.EnumKey(key, index))
+                    index += 1
+                except OSError:
+                    break
+    except FileNotFoundError:
+        return []
+    return versions
+
+
+def _read_registry_blob(version: str) -> str:
+    _require_winreg()
+    subkey = f"{REG_BASE_SUBKEY}\\{version}"
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, subkey) as key:
+            value, reg_type = winreg.QueryValueEx(key, REG_VALUE_NAME)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Araxis Merge registry entry not found for version '{version}'."
+        ) from exc
+    if reg_type != winreg.REG_SZ:
+        raise SystemExit(
+            f"Expected REG_SZ for {REG_VALUE_NAME} at version '{version}', got {reg_type}."
+        )
+    if not isinstance(value, str):
+        raise SystemExit(
+            f"Registry value {REG_VALUE_NAME} at version '{version}' is not a string."
+        )
+    return value
+
+
+def _write_registry_blob(version: str, text: str) -> None:
+    _require_winreg()
+    subkey = f"{REG_BASE_SUBKEY}\\{version}"
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, subkey, 0, winreg.KEY_SET_VALUE) as key:
+            winreg.SetValueEx(key, REG_VALUE_NAME, 0, winreg.REG_SZ, text)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Araxis Merge registry entry not found for version '{version}'."
+        ) from exc
+
+
+def parse_blob_location(spec: str) -> BlobLocation:
+    spec = spec.strip()
+    lower_spec = spec.lower()
+    if lower_spec == "reg" or lower_spec.startswith("reg:"):
+        requested = spec[4:] if lower_spec.startswith("reg:") else ""
+        requested = requested.strip()
+        versions = _list_registry_versions()
+        if requested:
+            if requested not in versions:
+                raise SystemExit(
+                    f"Araxis Merge registry version '{requested}' not found under HKCU\\{REG_BASE_SUBKEY}."
+                )
+            version = requested
+        else:
+            if not versions:
+                raise SystemExit(
+                    f"No Araxis Merge registry versions found under HKCU\\{REG_BASE_SUBKEY}."
+                )
+            version = sorted(versions, key=_version_sort_key, reverse=True)[0]
+        return BlobLocation(kind="registry", version=version)
+    return BlobLocation(kind="file", path=Path(spec))
+
+
+def read_blob_text(location: BlobLocation) -> str:
+    if location.kind == "file":
+        assert location.path is not None
+        return read_text(location.path)
+    assert location.version is not None
+    return _read_registry_blob(location.version)
+
+
+def write_blob_text(location: BlobLocation, text: str) -> None:
+    if location.kind == "file":
+        assert location.path is not None
+        write_text(location.path, text)
+        return
+    assert location.version is not None
+    _write_registry_blob(location.version, text)
 
 @dataclass
 class Language:
@@ -93,8 +215,8 @@ def write_text(path: Path, text: str) -> None:
     with path.open("w", encoding="utf-8", newline="") as f:
         f.write(text)
 
-def load_json_with_optional_header(path: Path) -> Dict[str, str]:
-    raw = read_text(path)
+def load_json_with_optional_header(source: BlobLocation) -> Dict[str, str]:
+    raw = read_blob_text(source)
     i = raw.find("{")
     data = json.loads(raw[i:] if i >= 0 else raw)
     if not isinstance(data, dict):
@@ -107,12 +229,12 @@ def load_json_with_optional_header(path: Path) -> Dict[str, str]:
         out[k] = v
     return out
 
-def dump_araxis_json(flat: Dict[str, str], outfile: Path, no_header: bool) -> None:
+def dump_araxis_json(flat: Dict[str, str], destination: BlobLocation, no_header: bool) -> None:
     if no_header:
         txt = json.dumps(flat, ensure_ascii=False, indent=2)
     else:
         txt = "json: " + json.dumps(flat, ensure_ascii=False, separators=(",", ":"))
-    write_text(outfile, txt)
+    write_blob_text(destination, txt)
 
 def parse_languages_from_flat(flat: Dict[str, str]) -> Tuple[Dict[str, Language], Dict[str, str]]:
     uuid_to_lang: Dict[str, Language] = {}
@@ -183,7 +305,8 @@ def load_languages_from_dir(indir: Path) -> List[Language]:
     return langs
 
 def cmd_unpack(args: argparse.Namespace) -> None:
-    flat = load_json_with_optional_header(Path(args.input_file))
+    input_location = parse_blob_location(args.input_file)
+    flat = load_json_with_optional_header(input_location)
     uuid_to_lang, _ = parse_languages_from_flat(flat)
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -209,12 +332,16 @@ def cmd_pack(args: argparse.Namespace) -> None:
             raise SystemExit(f"Duplicate filenamePattern between UUIDs {seen[L.filenamePattern]} and {L.uuid}: '{L.filenamePattern}'")
         seen[L.filenamePattern] = L.uuid
     flat = build_flat_from_languages(langs)
-    dump_araxis_json(flat, Path(args.output_file), args.no_header)
+    output_location = parse_blob_location(args.output_file)
+    dump_araxis_json(flat, output_location, args.no_header)
     print(f"Wrote Araxis JSON to: {args.output_file}")
 
 def cmd_merge(args: argparse.Namespace) -> None:
-    out_file = Path(args.output_file)
-    target_flat = load_json_with_optional_header(out_file) if out_file.exists() else {}
+    output_location = parse_blob_location(args.output_file)
+    try:
+        target_flat = load_json_with_optional_header(output_location)
+    except FileNotFoundError:
+        target_flat = {}
     uuid_to_lang, pattern_to_uuid = parse_languages_from_flat(target_flat)
     incoming = load_languages_from_dir(Path(args.input_dir))
 
@@ -243,8 +370,8 @@ def cmd_merge(args: argparse.Namespace) -> None:
         pattern_to_uuid[L.filenamePattern] = L.uuid
 
     flat_new = build_flat_from_languages(list(uuid_to_lang.values()))
-    dump_araxis_json(flat_new, out_file, args.no_header)
-    print(f"Merged {len(incoming)} language(s) into: {out_file}")
+    dump_araxis_json(flat_new, output_location, args.no_header)
+    print(f"Merged {len(incoming)} language(s) into: {args.output_file}")
 
 def main(argv: List[str]) -> None:
     p = argparse.ArgumentParser(description="Unpack/pack/merge Araxis Merge generic syntax definitions.")

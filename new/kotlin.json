@@ -1,0 +1,15 @@
+{
+  "uuid": "kotlin",
+  "name": "Kotlin",
+  "filenamePattern": "*.kt;*.kts",
+  "keywordsClass1": "println print readLine let run apply also takeIf takeUnless mapOf mutableMapOf listOf mutableListOf setOf mutableSetOf sequenceOf with use",
+  "keywordsClass2": "Unit Any Nothing Int Long Short Byte Double Float Char Boolean String Array List MutableList Set MutableSet Map MutableMap Pair Triple Sequence Lazy Delegates Regex Result UInt ULong UShort UByte UShortArray UIntArray ULongArray UByteArray true false null",
+  "keywordsClass3": "if else when try catch finally for while do return break continue throw in !in is !is as as? this super object class interface enum data sealed companion typealias fun val var init where get set constructor field property receiver override open final abstract private protected public internal lateinit tailrec inline noinline crossinline reified suspend infix operator external const expect actual annotation out vararg by import package",
+  "operatorSymbols": "+ - * / % ++ -- && || ! = == === != !== <= >= < > ?: ?. :: .. !! += -= *= /= %= <<= >>= ( ) { } [ ]",
+  "singleLineCommentSymbols": "//",
+  "multiLineCommentStartSymbols": "/*",
+  "multiLineCommentEndSymbols": "*/",
+  "isCaseSensitive": "true",
+  "backslashIsAStringEscape": true,
+  "lexer": "generic"
+}
